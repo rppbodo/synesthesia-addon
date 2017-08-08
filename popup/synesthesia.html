@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<style>
+* {
+	font-size: 16px;
+}
+input {
+	width: 100px;
+}
+input, label {
+	vertical-align: middle;
+}
+#tag-list {
+	white-space: nowrap;
+}
+</style>
+</head><body>
+
+<h4>Synesthesia Addon</h4>
+Number of tags: <input id="n-tags" type="number" value="1" min="1" />
+<button id="tags">get most frequent tags</button>
+<div id="tag-list"></div>
+<script src="synesthesia.js"></script>
+</body></html>

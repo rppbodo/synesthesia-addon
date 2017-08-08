@@ -1,0 +1,33 @@
+{
+	"name": "Synesthesia",
+	"description": "This extension plays tones based on site HTML.",
+	"manifest_version": 2,
+	"version": "1.0",
+	"icons": {
+		"48": "icons/sound-48.png"
+	},
+	"content_scripts": [{
+		"matches": ["<all_urls>"],
+		"js": [
+			"definitions.js",
+			"synths/commons.js",
+			"synths/WhiteNoise.js",
+			"synths/Block.js",
+			"synths/Drum.js",
+			"synths/Guitar.js",
+			"synths/Harpsichord.js",
+			"synths/Maraca.js",
+			"synths/Pong.js",
+			"synths/main.js"
+			],
+		"css": ["style.css"]
+	}],
+	"permissions": [
+		"activeTab"
+	],
+	"browser_action": {
+		"default_icon": "icons/sound-32.png",
+		"default_title": "Synesthesia",
+		"default_popup": "popup/synesthesia.html"
+	}
+}
