@@ -1,14 +1,10 @@
-'use strict';
-
-var tagHistogram = {};
+var tagHist = {};
 
 var load = function(element) {
-	if (isVisible(element)) {
-		if (element.tagName in tagHistogram) {
-			tagHistogram[element.tagName] += 1;
-		} else {
-			tagHistogram[element.tagName] = 1;
-		}
+	if (element.tagName in tagHist) {
+		tagHist[element.tagName] += 1;
+	} else {
+		tagHist[element.tagName] = 1;
 	}
 
 	var children = element.childNodes;
@@ -26,7 +22,7 @@ var load = function(element) {
 var tags = function(request, sender, sendResponse) {
 	load(document.getElementsByTagName('body')[0]);
 	browser.runtime.onMessage.removeListener(tags);
-	var response = Object.keys(tagHistogram).sort(function(a,b) { return tagHistogram[b] - tagHistogram[a] }).slice(0, request.nTags);
+	var response = Object.keys(tagHist).sort(function(a,b) { return tagHist[b] - tagHist[a] }).slice(0, request.nTags);
 	return Promise.resolve({ response: response });
 };
 

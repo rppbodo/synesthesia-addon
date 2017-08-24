@@ -9,6 +9,7 @@
 	"content_scripts": [{
 		"matches": ["<all_urls>"],
 		"js": [
+			"FileSaver.js",
 			"definitions.js",
 			"synths/commons.js",
 			"synths/WhiteNoise.js",
