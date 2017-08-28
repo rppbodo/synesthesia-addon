@@ -27,7 +27,7 @@ var insertElementWithStyle = function(element) {
 	tagStyle[element.tagName][6].push(getMargin(style));
 };
 
-var bodo = function(element) {
+var loadHtml = function(element) {
 	if (element.tagName in tagHistogram) {
 		tagHistogram[element.tagName] += 1;
 	} else {
@@ -48,7 +48,7 @@ var bodo = function(element) {
 		for (var i = 0; i < children.length; i++) {
 			var item = children[i];
 			if (item.nodeType == ELEMENT_NODE) {
-				bodo(item);
+				loadHtml(item);
 			}
 		}
 	}

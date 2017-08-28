@@ -99,10 +99,10 @@ var drawInstruments = function(data, canvas, context) {
 
 var pianoRoll = function(request, sender, sendResponse) {
 	init();
-	bodo(document.getElementsByTagName('body')[0]);
-	var asd = drawPiano();
-	var canvas = asd[0];
-	var context = asd[1];
+	loadHtml(document.getElementsByTagName('body')[0]);
+	var array = drawPiano();
+	var canvas = array[0];
+	var context = array[1];
 	drawInstruments(request.data, canvas, context);
 	var blob = dataURItoBlob(canvas.toDataURL(), "image/png");
 	saveAs(blob, window.location.host.replace("www.", "") + ".png");

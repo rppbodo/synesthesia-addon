@@ -51,7 +51,7 @@ var startSonification = function(data) {
 
 var sonify = function(request, sender, sendResponse) {
 	init();
-	load(document.getElementsByTagName('body')[0]);
+	loadHtml(document.getElementsByTagName('body')[0]);
 	startSonification(request.data);
 	browser.runtime.onMessage.removeListener(sonify);
 };
