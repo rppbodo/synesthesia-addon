@@ -23,16 +23,18 @@ var getFields = function(selected) {
 	return html;
 };
 
-var getMappings = function() {
+var getMappings = function(onsetAutoMap) { // Math.floor(getRandom(0, 7))
 	var html = getSynths(Math.floor(getRandom(0, 6)));
 	html += "Note: <input type=\"number\" value=\"" + getRandom(32, 64) + "\" /> * ";
-	html += getFields(Math.floor(getRandom(0, 7))) + " + <input type=\"number\" value=\"" + getRandom(32, 64) + "\" /><br />";
-	html += "Onset: <input type=\"number\" value=\"" + getRandom(0, 10000) + "\" /> * ";
-	html += getFields(Math.floor(getRandom(0, 7))) + " + <input type=\"number\" value=\"" + getRandom(0, 10000) + "\" /><br />";
+	html += getFields(0) + " + <input type=\"number\" value=\"" + getRandom(0, 32) + "\" /><br />";
 	html += "Duration: <input type=\"number\" value=\"" + getRandom(500, 2500) + "\" /> * ";
-	html += getFields(Math.floor(getRandom(0, 7))) + " + <input type=\"number\" value=\"" + getRandom(500, 2500) + "\" /><br />";
+	html += getFields(2) + " + <input type=\"number\" value=\"" + getRandom(500, 2500) + "\" /><br />";
 	html += "Dynamics: <input type=\"number\" value=\"" + getRandom(0, 1) + "\" /> * ";
-	html += getFields(Math.floor(getRandom(0, 7))) + " + <input type=\"number\" value=\"" + getRandom(0, 1) + "\" /><br />";
+	html += getFields(3) + " + <input type=\"number\" value=\"" + getRandom(0, 1) + "\" /><br />";
+	if (!onsetAutoMap) {
+		html += "Onset: <input type=\"number\" value=\"" + getRandom(0, 10000) + "\" /> * ";
+		html += getFields(1) + " + <input type=\"number\" value=\"" + getRandom(0, 5000) + "\" /><br />";
+	}
 	return html;
 };
 
@@ -54,6 +56,9 @@ var generateData = function() {
 };
 
 document.addEventListener("click", (e) => {
+	var autoScroll = document.getElementById("auto-scroll").checked;
+	var onsetAutoMap = document.getElementById("onset-auto-map").checked;
+
 	if (e.target.id == "tags") {
 		browser.tabs.executeScript(null, {
 			file: "/content_scripts/tags.js"
@@ -66,7 +71,7 @@ document.addEventListener("click", (e) => {
 				var tag;
 				for (tag in response.response) {
 					html += "<li>" + response.response[tag] + "</li>";
-					html += getMappings();
+					html += getMappings(onsetAutoMap);
 				}
 				html += "</ol>";
 				html += "<button id=\"sonify\">sonify!</button>";
@@ -81,7 +86,12 @@ document.addEventListener("click", (e) => {
 
 		var gettingActiveTab = browser.tabs.query({ active: true, currentWindow: true });
 		gettingActiveTab.then((tabs) => {
-			browser.tabs.sendMessage(tabs[0].id, { data: generateData() });
+			browser.tabs.sendMessage(tabs[0].id, {
+				autoScroll: autoScroll,
+				onsetAutoMap: onsetAutoMap,
+				data: generateData()
+			});
 		});
 	}
 });
+

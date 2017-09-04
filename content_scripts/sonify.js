@@ -16,43 +16,54 @@ var removeClass = function(el, className) {
 	}
 };
 
-var playNote = function(note) {
+var playNote = function(note, autoScroll) {
 	setTimeout(function() {
+		// console.log(note.element, note.onset, note.duration);
+
 		var synth = synthFactory(note.synth);
 		synth.play(note.note, note.dynamics);
 
-		note.element.scrollIntoView(true);
+		if (autoScroll) {
+			note.element.scrollIntoView(true);
+		}
+
 		addClass(note.element, "sonification-addon-highlight");
 
 	  setTimeout(function () {
 	    synth.stop();
 	    synth = undefined;
-	    // removeClass(note.element, "sonification-addon-highlight");
+	    removeClass(note.element, "sonification-addon-highlight");
 	  }, note.duration);
 	}, note.onset);
 };
 
-var playInstrument = function(config) {
+var playInstrument = function(config, onsetAutoMap, autoScroll) {
 	normalizeAll(config);
 
-  for (var i = 0; i < tagHistogram[config.tag]; i++) {
-		playNote(generateNote(config, i));
+	var onset = 0;
+	for (var i = 0; i < tagHistogram[config.tag]; i++) {
+		var note = generateNote(config, i, onsetAutoMap, onset);
+		playNote(note, autoScroll);
+		onset = onset + note.duration;
 	}
 };
 
-var startSonification = function(data) {
+var startSonification = function(data, autoScroll, onsetAutoMap) {
   var n = 14;
+	if (onsetAutoMap) {
+		n = 11;
+	}
   var k = data.length / n;
   for (var i = 0; i < k; i++) {
-    var config = interpret(data.slice(i * n, i * n + (n + 1)));
-    playInstrument(config);
+    var config = interpret(data.slice(i * n, i * n + (n + 1)), onsetAutoMap);
+    playInstrument(config, onsetAutoMap, autoScroll);
   }
 };
 
 var sonify = function(request, sender, sendResponse) {
 	init();
 	loadHtml(document.getElementsByTagName('body')[0]);
-	startSonification(request.data);
+	startSonification(request.data, request.autoScroll, request.onsetAutoMap);
 	browser.runtime.onMessage.removeListener(sonify);
 };
 

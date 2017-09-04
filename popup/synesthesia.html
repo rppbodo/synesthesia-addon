@@ -5,7 +5,7 @@
 * {
 	font-size: 16px;
 }
-input {
+#tag-list input, #n-tags {
 	width: 100px;
 }
 input, label {
@@ -18,7 +18,10 @@ input, label {
 </head><body>
 
 <h4>Synesthesia Addon</h4>
-Number of tags: <input id="n-tags" type="number" value="1" min="1" />
+Number of tags: <input id="n-tags" type="number" value="1" min="1" /><br />
+<input id="auto-scroll" type="checkbox" /> auto-scroll?<br />
+<input id="onset-auto-map" type="checkbox" checked /> onset auto-map?<br />
+
 <button id="tags">get most frequent tags</button>
 <div id="tag-list"></div>
 <script src="synesthesia.js"></script>

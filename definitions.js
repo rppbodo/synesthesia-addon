@@ -54,91 +54,102 @@ var loadHtml = function(element) {
 	}
 };
 
-var interpret = function(data) {
-  var config = {};
+var interpret = function(data, onsetAutoMap) {
+	var config = {};
+	// HTML tag
+	config["tag"] = data[0];
 
-  // HTML tag
-  config["tag"] = data[0];
+	// Instrument
+	config["instrument"] = data[1];
 
-  // Instrument
-  config["instrument"] = data[1];
+	// Note: a * x + b
+	config["note"] = {};
+	config["note"]["a"] = parseFloat(data[2]);
+	config["note"]["x"] = data[3];
+	config["note"]["b"] = parseFloat(data[4]);
 
-  // Note: a * x + b
-  config["note"] = {};
-  config["note"]["a"] = parseFloat(data[2]);
-  config["note"]["x"] = data[3];
-  config["note"]["b"] = parseFloat(data[4]);
+	// Duration: a * x + b
+	config["duration"] = {};
+	config["duration"]["a"] = parseFloat(data[5]);
+	config["duration"]["x"] = data[6];
+	config["duration"]["b"] = parseFloat(data[7]);
 
-  // Onset: a * x + b
-  config["onset"] = {};
-  config["onset"]["a"] = parseFloat(data[5]);
-  config["onset"]["x"] = data[6];
-  config["onset"]["b"] = parseFloat(data[7]);
+	// Dynamics: a * x + b
+	config["dynamics"] = {};
+	config["dynamics"]["a"] = parseFloat(data[8]);
+	config["dynamics"]["x"] = data[9];
+	config["dynamics"]["b"] = parseFloat(data[10]);
 
-  // Duration: a * x + b
-  config["duration"] = {};
-  config["duration"]["a"] = parseFloat(data[8]);
-  config["duration"]["x"] = data[9];
-  config["duration"]["b"] = parseFloat(data[10]);
+	if (!onsetAutoMap) {
+		// Onset: a * x + b
+		config["onset"] = {};
+		config["onset"]["a"] = parseFloat(data[11]);
+		config["onset"]["x"] = data[12];
+		config["onset"]["b"] = parseFloat(data[13]);
+	}
 
-  // Dynamics: a * x + b
-  config["dynamics"] = {};
-  config["dynamics"]["a"] = parseFloat(data[11]);
-  config["dynamics"]["x"] = data[12];
-  config["dynamics"]["b"] = parseFloat(data[13]);
-
-  return config;
+	return config;
 };
 
-var generateNote = function(config, i) {
+var generateNote = function(config, i, onsetAutoMap, onset) {
 	var note = {};
 	note.synth = config.instrument;
 	note.element = tags[config.tag][i];
 	note.note = parseInt(config.note.a * tagStyle[config.tag][config.note.x][i] + config.note.b);
-	note.onset = config.onset.a * tagStyle[config.tag][config.onset.x][i] + config.onset.b;
 	note.duration = config.duration.a * tagStyle[config.tag][config.duration.x][i] + config.duration.b;
 	note.dynamics = config.dynamics.a * tagStyle[config.tag][config.dynamics.x][i] + config.dynamics.b;
+	if (!onsetAutoMap) {
+		note.onset = config.onset.a * tagStyle[config.tag][config.onset.x][i] + config.onset.b;
+	} else {
+		note.onset = onset;
+	}
 	return note;
 };
 
 var getMax = function(array, key) {
-	var max = -Infinity;
+	var maxValue = -Infinity;
 	for (var i = 0; i < array.length; i++) {
 		if (key === undefined) {
-			if (array[i] > max) {
-				max = array[i];
+			if (array[i] > maxValue) {
+				maxValue = array[i];
 			}
 		} else {
-			if (array[i][key] > max) {
-				max = array[i][key];
+			if (array[i][key] > maxValue) {
+				maxValue = array[i][key];
 			}
 		}
 	}
-	return max;
+	return maxValue;
 };
 
 var getMin = function(array, key) {
-	var min = Infinity;
+	var minValue = Infinity;
 	for (var i = 0; i < array.length; i++) {
 		if (key === undefined) {
-			if (array[i] < min) {
-				min = array[i];
+			if (array[i] < minValue) {
+				minValue = array[i];
 			}
 		} else {
-			if (array[i][key] < min) {
-				min = array[i][key];
+			if (array[i][key] < minValue) {
+				minValue = array[i][key];
 			}
 		}
 	}
-	return min;
+	return minValue;
 };
 
 var normalize = function(array) {
-	var min = getMin(array);
-	var max = getMax(array);
+	var minValue = getMin(array);
+	var maxValue = getMax(array);
 
-	for (var i = 0; i < array.length; i++) {
-		array[i] = (array[i] - min) / (max - min);
+	if (minValue == maxValue) {
+		for (var i = 0; i < array.length; i++) {
+			array[i] = 0.5;
+		}
+	} else {
+		for (var i = 0; i < array.length; i++) {
+			array[i] = (array[i] - minValue) / (maxValue - minValue);
+		}
 	}
 
 	return array;
@@ -149,14 +160,14 @@ var normalizeAll = function(config) {
 		var array = normalize(tagStyle[config.tag][i]);
 		tagStyle[config.tag][i] = array;
 
-		var min = getMin(array);
-		if (min == Infinity || min === Infinity) {
-			console.log("something gone wrong with min!");
+		var minValue = getMin(array);
+		if (minValue == Infinity || minValue === Infinity) {
+			console.log("something gone wrong with minValue!");
 		}
 
-		var max = getMax(array);
-		if (max == -Infinity || max === -Infinity) {
-			console.log("something gone wrong with max!");
+		var maxValue = getMax(array);
+		if (maxValue == -Infinity || maxValue === -Infinity) {
+			console.log("something gone wrong with maxValue!");
 		}
 	}
 };
