@@ -1,0 +1,23 @@
+/*
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+}
+* {
+	font-size: 16px;
+}
+#tag-list input, #n-tags {
+	width: 100px;
+}
+input, label {
+	vertical-align: middle;
+}
+#tag-list {
+	white-space: nowrap;
+}
+*/
+#html-content, #text-content, #image-content {
+	display: none;
+}

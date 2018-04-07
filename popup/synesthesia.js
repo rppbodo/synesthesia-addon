@@ -1,87 +1,42 @@
-var synths = ["Block", "Drum", "Guitar", "Harpsichord", "Maraca", "Pong"];
-var fields = ["width", "height", "top", "left", "padding", "borderWidth", "margin"];
-
-var getRandom = function(min, max) {
-	return Math.random() * (max - min) + min;
-};
-
-var getSynths = function(selected) {
-	var html = "Instrument: <select>";
-	for (var i = 0; i < 6; i++) {
-  	html += "<option value=\"" + i + "\"" + (i ==  selected ? "selected" : "") + ">" + synths[i] + "</option>";
-	}
-  html += "</select><br />";
-	return html;
-};
-
-var getFields = function(selected) {
-	var html = "<select>";
-	for (var i = 0; i < 7; i++) {
-  	html += "<option value=\"" + i + "\"" + (i ==  selected ? "selected" : "") + ">" + fields[i] + "</option>";
-	}
-	html += "</select>";
-	return html;
-};
-
-var getMappings = function(onsetAutoMap) { // Math.floor(getRandom(0, 7))
-	var html = getSynths(Math.floor(getRandom(0, 6)));
-	html += "Note: <input type=\"number\" value=\"" + getRandom(32, 64) + "\" /> * ";
-	html += getFields(0) + " + <input type=\"number\" value=\"" + getRandom(0, 32) + "\" /><br />";
-	html += "Duration: <input type=\"number\" value=\"" + getRandom(500, 2500) + "\" /> * ";
-	html += getFields(2) + " + <input type=\"number\" value=\"" + getRandom(500, 2500) + "\" /><br />";
-	html += "Dynamics: <input type=\"number\" value=\"" + getRandom(0, 1) + "\" /> * ";
-	html += getFields(3) + " + <input type=\"number\" value=\"" + getRandom(0, 1) + "\" /><br />";
-	if (!onsetAutoMap) {
-		html += "Onset: <input type=\"number\" value=\"" + getRandom(0, 10000) + "\" /> * ";
-		html += getFields(1) + " + <input type=\"number\" value=\"" + getRandom(0, 5000) + "\" /><br />";
-	}
-	return html;
-};
-
-var generateData = function() {
-	var data = [];
-	var element = document.getElementById("tag-list");
-	var children = element.childNodes[0].childNodes;
-	for (var i = 0; i < children.length; i++) {
-		var e = children[i];
-		if (e.tagName == "LI") {
-			data.push(e.innerHTML);
-		} else if (e.tagName == "INPUT") {
-			data.push(e.value);
-		} else if (e.tagName == "SELECT") {
-			data.push(e.options[e.selectedIndex].value);
-		}
-	}
-	return data;
-};
-
 document.addEventListener("click", (e) => {
-	var autoScroll = document.getElementById("auto-scroll").checked;
-	var onsetAutoMap = document.getElementById("onset-auto-map").checked;
-
-	if (e.target.id == "tags") {
+	if (e.target.id == "go") {
+		var type = getCheckedRadio("sonification-type");
+		document.getElementById(type + "-content").style.display = "block";
+		document.getElementById("main-content").style.display = "none";
+	} else if (e.target.id == "back") {
+		var divs = [].slice.call(document.getElementsByClassName("content"));
+		divs.forEach(function(element) {
+			element.style.display = "none";
+		});
+		document.getElementById("main-content").style.display = "block";
+	} else if (e.target.id == "tags") {
+		var onsetAutoMap = document.getElementById("onset-auto-map").checked;
+		
 		browser.tabs.executeScript(null, {
 			file: "/content_scripts/tags.js"
 		});
 
 		var gettingActiveTab = browser.tabs.query({ active: true, currentWindow: true });
 		gettingActiveTab.then((tabs) => {
-			browser.tabs.sendMessage(tabs[0].id, { nTags: document.getElementById("n-tags").value }).then(response => {
-				var html = "<ol>";
+			browser.tabs.sendMessage(tabs[0].id,
+			{ nTags: document.getElementById("n-tags").value }).then(response => {
+				var html = "<button id=\"sonify\">sonify!</button>";
+				html += "<ol>";
 				var tag;
 				for (tag in response.response) {
 					html += "<li>" + response.response[tag] + "</li>";
 					html += getMappings(onsetAutoMap);
 				}
 				html += "</ol>";
-				html += "<button id=\"sonify\">sonify!</button>";
-				html += "<button id=\"piano-roll\">piano roll</button>";
 				document.getElementById("tag-list").innerHTML = html;
-	    });
+			});
 		});
-	} else if (e.target.id == "sonify" || e.target.id == "piano-roll") {
+	} else if (e.target.id == "sonify") {
+		var autoScroll = document.getElementById("auto-scroll").checked;
+		var onsetAutoMap = document.getElementById("onset-auto-map").checked;
+
 		browser.tabs.executeScript(null, {
-			file: "/content_scripts/" + e.target.id + ".js"
+			file: "/content_scripts/sonify.js"
 		});
 
 		var gettingActiveTab = browser.tabs.query({ active: true, currentWindow: true });
@@ -92,6 +47,16 @@ document.addEventListener("click", (e) => {
 				data: generateData()
 			});
 		});
+	} else if (e.target.id == "text2melody") {
+		browser.tabs.executeScript(null, {
+			file: "/content_scripts/text2melody.js"
+		});
+		
+	} else if (e.target.id == "text2harmony") {
+		browser.tabs.executeScript(null, {
+			file: "/content_scripts/text2harmony.js"
+		});
+		
 	}
 });
 

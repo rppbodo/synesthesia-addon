@@ -27,3 +27,4 @@ var tags = function(request, sender, sendResponse) {
 };
 
 browser.runtime.onMessage.addListener(tags);
+

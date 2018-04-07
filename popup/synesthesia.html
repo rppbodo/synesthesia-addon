@@ -1,28 +1,43 @@
 <!doctype html>
 <html><head>
 <meta charset="utf-8">
-<style>
-* {
-	font-size: 16px;
-}
-#tag-list input, #n-tags {
-	width: 100px;
-}
-input, label {
-	vertical-align: middle;
-}
-#tag-list {
-	white-space: nowrap;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="synesthesia.css" />
 </head><body>
+<h3>Synesthesia Addon</h3>
 
-<h4>Synesthesia Addon</h4>
-Number of tags: <input id="n-tags" type="number" value="1" min="1" /><br />
-<input id="auto-scroll" type="checkbox" /> auto-scroll?<br />
-<input id="onset-auto-map" type="checkbox" checked /> onset auto-map?<br />
+<div id="main-content" class="content">
+	<span>What would you like to sonify?</span><br />
+	<input type="radio" name="sonification-type" value="html" /> HTML<br />
+	<input type="radio" name="sonification-type" value="text" /> Text<br />
+	<!-- input type="radio" name="sonification-type" value="image"> Image<br / -->
+	<button id="go">(green light) go!</button>
+</div>
 
-<button id="tags">get most frequent tags</button>
-<div id="tag-list"></div>
+<div id="html-content" class="content">
+	<button id="back">back!</button>
+	<h4>HTML sonification</h4>
+	
+	Number of tags: <input id="n-tags" type="number" value="1" min="1" /><br />
+	<input id="auto-scroll" type="checkbox" /> auto-scroll?<br />
+	<input id="onset-auto-map" type="checkbox" checked /> onset auto-map?<br />
+	<button id="tags">get most frequent tags</button>
+	<div id="tag-list"></div>
+</div>
+
+<div id="text-content" class="content">
+	<button id="back">back!</button>
+	<h4>Text sonification</h4>
+
+	<button id="text2melody">text2melody</button>
+	<button id="text2harmony">text2harmony</button>
+</div>
+
+<div id="image-content" class="content">
+	<button id="back">back!</button>
+	<h4>Image sonification</h4>
+
+</div>
+
+<script src="utils.js"></script>
 <script src="synesthesia.js"></script>
 </body></html>

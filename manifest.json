@@ -9,7 +9,7 @@
 	"content_scripts": [{
 		"matches": ["<all_urls>"],
 		"js": [
-			"FileSaver.js",
+			"Tone.js",
 			"definitions.js",
 			"synths/commons.js",
 			"synths/WhiteNoise.js",
@@ -20,7 +20,7 @@
 			"synths/Maraca.js",
 			"synths/Pong.js",
 			"synths/main.js"
-			],
+		],
 		"css": ["style.css"]
 	}],
 	"permissions": [
